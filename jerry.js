@@ -1,4 +1,4 @@
-class creature {
+class jerry {
     constructor(
         x, 
         y, 
@@ -31,7 +31,7 @@ class creature {
         this.color = color(255, 255, 255, 255);
         this.safe = [];
         this.libido = libido;
-        // -------------------------- FEAR AND SOCIABILITY FEAR CAUSES AVOIDING OTHER CREATURES, SOCIABILITY CAUSES APPROACHING -------------------------- //
+        // -------------------------- FEAR AND SOCIABILITY FEAR CAUSES AVOIDING OTHER jerryS, SOCIABILITY CAUSES APPROACHING -------------------------- //
         this.fear = fear;
         this.sociability = sociability;
         this.dead = false;
@@ -68,8 +68,8 @@ class creature {
             this.vel.y *= -1;
         }
 
-        for(let i = 0; i < creatures.length; i++) {
-            const other = creatures[i];
+        for(let i = 0; i < jerrys.length; i++) {
+            const other = jerrys[i];
             if(other === this || other.dead) continue;
 
             const minDist = this.size/2 + other.size/2;
@@ -94,7 +94,7 @@ class creature {
 
     babyMake(other){
         this.acc = createVector((this.pos.x + other.pos.x)*2, (this.pos.y + other.pos.y)*2);
-        let child = new creature(
+        let child = new jerry(
             (this.pos.x + other.pos.x)/2, 
             (this.pos.y + other.pos.y)/2, 
             bias(this.speed, other.speed, this.fitness, other.fitness),
@@ -108,8 +108,12 @@ class creature {
             bias(this.maxKids, other.maxKids, this.fitness, other.fitness),
             bias(this.fertility, other.fertility, this.fitness, other.fitness)
         );
-        creatures.push(child);
+        jerrys.push(child);
         this.children.push(child);
+    }
+
+    observe(other){
+        
     }
 
     evaluate(other) {
@@ -122,13 +126,14 @@ class creature {
             if(other.health <= 0) {
                 this.eat(other);
             }
+            this.actionColor = color();
         }
         else {
             this.safe.push(other);
         }
 
         if(random(0, 10/libidoScale) < this.libido && random(0, 10/libidoScale) < other.libido && !this.children.includes(other) && !other.children.includes(this)) {
-            if(creatures.length < maxPopulation && this.children.length < this.maxKids && this.birthPeriod > this.fertility){
+            if(jerrys.length < maxPopulation && this.children.length < this.maxKids && this.birthPeriod > this.fertility){
                 this.babyMake(other);
                 this.birthPeriod = 0;
             }

@@ -1,6 +1,6 @@
-let amt = 50;
+let amt = 80;
 let maxPopulation = 150;
-let creatures = [];
+let jerrys = [];
 let speedMultiplier = 1.7;
 let distanceScale = 1.5;
 let libidoScale = 0.8;
@@ -8,13 +8,14 @@ let foodAmt = 200;
 let food = []
 let fertilityScale = 3;
 let foodBoost = 1;
+let tick = 0;
 
 function setup() {
     canvas = createCanvas(1000, 500);
     canvas.position((window.innerWidth/2) - (width/2), (window.innerHeight/2) - (height/2));
     
     for (let i = 0; i < amt; i++) {
-        creatures.push(new creature(random(0, width), random(0, height)));
+        jerrys.push(new jerry(random(0, width), random(0, height)));
     }
     for (let i = 0; i < foodAmt; i++){
         food.push(createVector(random(0, width), random(0, height)));
@@ -42,7 +43,7 @@ function bias(x1, x2, y1, y2){
 
 function draw() {
 
-    if(creatures.length <= 1){
+    if(jerrys.length <= 1){
         setup();
     }
     
@@ -53,10 +54,10 @@ function draw() {
         noStroke();
         fill(150, 210, 150);
         ellipse(food[i].x, food[i].y, 5, 5);
-        for(let j = 0; j < creatures.length; j++) {
-            if(dist(food[i].x, food[i].y, creatures[j].pos.x, creatures[j].pos.y) < creatures[j].size){
-                creatures[j].hunger -= foodBoost/5;
-                creatures[j].health += foodBoost;
+        for(let j = 0; j < jerrys.length; j++) {
+            if(dist(food[i].x, food[i].y, jerrys[j].pos.x, jerrys[j].pos.y) < jerrys[j].size){
+                jerrys[j].hunger -= foodBoost/5;
+                jerrys[j].health += foodBoost;
                 food = food.filter(nugget => nugget != food[i]);
                 i--;
                 break
@@ -64,38 +65,42 @@ function draw() {
         }
     }
 
-    for(let i = 0; i < creatures.length; i++) {
+    for(let i = 0; i < jerrys.length; i++) {
         
-        for(let j = 0; j < creatures.length; j++) {
+        for(let j = 0; j < jerrys.length; j++) {
             if(i != j) {
-                let d = dist(creatures[i].pos.x, creatures[i].pos.y, creatures[j].pos.x, creatures[j].pos.y);
-                let threshold = (width + height) / 30;
+                let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
+                let threshold = ((width + height) / 30)*distanceScale;
                 if(d < threshold) {
                     stroke(255, 150, 140, map(d, 0, threshold, 255, 0));
-                    line(creatures[i].pos.x, creatures[i].pos.y, creatures[j].pos.x, creatures[j].pos.y);
+                    
+                    stroke(jerrys[i].actionColor);
+                    line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
                     
                 }
                 if(d < threshold/2) {
-                    creatures[i].evaluate(creatures[j]);
-                    creatures[j].evaluate(creatures[i]);
+                    jerrys[i].evaluate(jerrys[j]);
+                    jerrys[j].evaluate(jerrys[i]);
                 }
                 else{
-                    creatures[i].safe = creatures[i].safe.filter(creature => creature != creatures[j]);
-                    creatures[j].safe = creatures[j].safe.filter(creature => creature != creatures[i]);
+                    jerrys[i].safe = jerrys[i].safe.filter(jerry => jerry != jerrys[j]);
+                    jerrys[j].safe = jerrys[j].safe.filter(jerry => jerry != jerrys[i]);
                 }
             }
         } 
         
     }
 
-    for(let i = 0; i < creatures.length; i++) {
-        creatures[i].update();
+    for(let i = 0; i < jerrys.length; i++) {
+        jerrys[i].update();
         noStroke();
-        fill(creatures[i].color);
-        ellipse(creatures[i].pos.x, creatures[i].pos.y, creatures[i].size);
-        if(creatures[i].dead) {
-            creatures.splice(i, 1);
+        fill(jerrys[i].color);
+        ellipse(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[i].size);
+        if(jerrys[i].dead) {
+            jerrys.splice(i, 1);
             i--;
         }
     }
+
+    tick++;
 }
