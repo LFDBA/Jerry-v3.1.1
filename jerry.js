@@ -18,7 +18,8 @@ class jerry {
         fertility = random(15*fertilityScale, 30*fertilityScale),
         infamy = 0,
         brain = new Brain(this),
-        plantFrequency = random(0.008, 0.03)
+        plantFrequency = random(0.008, 0.03),
+        devotion = random(1, 200)
     ) {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
@@ -37,6 +38,10 @@ class jerry {
         this.color = color(255, 255, 255, 255);
         this.safe = [];
         this.libido = libido;
+
+        this.devotion = devotion;
+        this.devote = 0;
+
         // -------------------------- FEAR AND SOCIABILITY FEAR CAUSES AVOIDING OTHER jerryS, SOCIABILITY CAUSES APPROACHING -------------------------- //
         this.fear = fear;
         this.sociability = sociability;
@@ -59,10 +64,30 @@ class jerry {
         this.approaching = 0;
         this.fleeing = 0;
 
+
+        // actions //
+        this.approach = this.approach.bind(this);
+        this.flee = this.flee.bind(this);
+        this.eat = this.eat.bind(this);
+        this.babyMake = this.babyMake.bind(this);
+        this.plant = this.plant.bind(this);
+
     }
 
 
     // ------------------------------ ACTIONS ------------------------------ // 
+
+    act(func, param){
+
+        if(tick-this.devote>=this.devotion) {
+            this.devote = tick;
+
+            console.log("do")
+
+            return func(param);
+        }
+        
+    }
 
     eat(other) {
         other.die();
@@ -79,21 +104,30 @@ class jerry {
 
     babyMake(other){
         this.acc = createVector((this.pos.x + other.pos.x)*2, (this.pos.y + other.pos.y)*2);
-        let child = new jerry(
-            (this.pos.x + other.pos.x)/2, 
-            (this.pos.y + other.pos.y)/2, 
-            bias(this.speed, other.speed, this.fitness, other.fitness),
-            bias(this.maxHealth, other.maxHealth, this.fitness, other.fitness), 
-            bias(this.aggression, other.aggression, this.fitness, other.fitness), 
-            bias(this.strengthGene, other.strengthGene, this.fitness, other.fitness),
-            bias(this.gripGene, other.gripGene, this.fitness, other.fitness),
-            bias(this.libido, other.libido, this.fitness, other.fitness),
-            bias(this.fear, other.fear, this.fitness, other.fitness),
-            bias(this.sociability, other.sociability, this.fitness, other.fitness),
-            bias(this.maxKids, other.maxKids, this.fitness, other.fitness),
-            bias(this.fertility, other.fertility, this.fitness, other.fitness),
-            bias(this.plantFrequency, other.plantFrequency, this.fitness, other.fitness)
-        );
+
+        let child;
+        if(random(0, 1) >= 1-mutationRate){
+            child = new jerry(
+                (this.pos.x + other.pos.x)/2, 
+                (this.pos.y + other.pos.y)/2, 
+                bias(this.speed, other.speed, this.fitness, other.fitness),
+                bias(this.maxHealth, other.maxHealth, this.fitness, other.fitness), 
+                bias(this.aggression, other.aggression, this.fitness, other.fitness), 
+                bias(this.strengthGene, other.strengthGene, this.fitness, other.fitness),
+                bias(this.gripGene, other.gripGene, this.fitness, other.fitness),
+                bias(this.libido, other.libido, this.fitness, other.fitness),
+                bias(this.fear, other.fear, this.fitness, other.fitness),
+                bias(this.sociability, other.sociability, this.fitness, other.fitness),
+                bias(this.maxKids, other.maxKids, this.fitness, other.fitness),
+                bias(this.fertility, other.fertility, this.fitness, other.fitness),
+                bias(this.plantFrequency, other.plantFrequency, this.fitness, other.fitness),
+                bias(this.devotion, other.devotion, this.fitness, other.fitness)
+                
+            );console.log("pretty chill")
+        }else {
+            child = new jerry((this.pos.x + other.pos.x)/2, (this.pos.y + other.pos.y)/2);
+            console.log("freak")
+        }
 
         // this.fitness += 1000;
 
@@ -107,6 +141,7 @@ class jerry {
         console.log("babyMake")
 
         this.brain.learn(other, 2, 1, this.fitness/1000);
+        this.color = color(240, 150, 150)
 
         return child;
     }
@@ -211,18 +246,32 @@ class jerry {
     async observe(other){
 
         // ------------------------- JERRY SPECIFIC ------------------------- //
-        if(this.brain.evaluate(other, 3) > 0.5 + (this.fear - this.sociability) * 0.1 && (this.latestAction[0] != 4 && this.latestAction[1] == other) && (this.approaching == 0 || this.approaching == other)){
-            this.approach(other);
-            this.approaching = 0;
+        // if(this.brain.evaluate(other, 3) > 0.5 + (this.fear - this.sociability) * 0.1 && (this.latestAction[0] != 4 && this.latestAction[1] == other) && (this.approaching == 0 || this.approaching == other)){
+        //     this.approach(other);
+        //     console.log("approaching")
+        // }else{
+        //     this.approaching = 0;
+        // }
+
+        // if(this.brain.evaluate(other, 4) > 0.5 + (this.sociability - this.fear) * 0.1 && (this.latestAction[0] != 3 && this.latestAction[1] == other) && (this.fleeing == 0 || this.fleeing == other)){
+        //     this.flee(other);
+        //     console.log("fleeing")
+        // }
+        // else{
+        //     this.fleeing = 0;    
+        // }
+
+        // ------------------------- NOT JERRY SPECIFIC ------------------------- //
+        if(this.brain.evaluate(other, 3) > 0.5 + (this.fear - this.sociability) * 0.1 && this.latestAction[0] != 4 && (this.approaching == 0 || this.approaching == other)){
+            this.act(this.approach, other);
         }else{
             this.approaching = 0;
         }
 
-        if(this.brain.evaluate(other, 4) > 0.5 + (this.sociability - this.fear) * 0.1 && (this.latestAction[0] != 34 && this.latestAction[1] == other) && (this.fleeing == 0 || this.fleeing == other)){
-            this.flee(other);
-        }
-        else{
-            this.fleeing = 0;    
+        if(this.brain.evaluate(other, 4) > 0.5 + (this.sociability - this.fear) * 0.1 && this.latestAction[0] != 3 && (this.fleeing == 0 || this.fleeing == other)){
+            this.act(this.flee, other);
+        }else{
+            this.fleeing = 0;
         }
     }
     
@@ -239,7 +288,7 @@ class jerry {
         if(random(0, 1) < this.aggression && !this.safe.includes(other) && this.brain.evaluate(other, 1)>=this.sociability) {
             other.health -= 15/255
             if(other.health <= 0) {
-                this.eat(other);
+                this.act(this.eat, other);
             }
 
             this.actionColor = colour(255, 140, 140);
@@ -252,7 +301,8 @@ class jerry {
 
         if(random(0, 10/libidoScale) < this.libido && random(0, 10/libidoScale) < other.libido && !this.children.includes(other) && !other.children.includes(this) && this.brain.evaluate(other, 2)>=1-this.libido) {
             if(jerrys.length < maxPopulation && this.children.length < this.maxKids && this.birthPeriod > this.fertility){
-                this.babyMake(other);
+                console.log("be")
+                this.act(this.babyMake, other);
                 this.birthPeriod = 0;
                 this.actionColor = colour(150, 210, 150);
             }
@@ -264,8 +314,6 @@ class jerry {
     }
 
     update() {
-
-        console.log(this.fitness)
         this.plantCooldown += this.plantFrequency;
         let steering = this.steer.copy();
         this.steer.set(0, 0);
@@ -289,7 +337,8 @@ class jerry {
         this.color = color(255, 255, 255, map(this.health, 0, this.maxHealth, 0, 255));
 
         if(this.brain.evaluate(this, 5) > 0.5 && this.plantCooldown > 3){
-            this.plant();
+            this.full = true;
+            this.act(this.plant);
             this.color = color(150, 210, 150);
             this.plantCooldown = 0;
             console.log("plant")

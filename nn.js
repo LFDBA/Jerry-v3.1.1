@@ -1,13 +1,13 @@
 class Brain {
     constructor(jer1) {
-        this.net = new NeuralNet(27);
+        this.net = new NeuralNet(28);
         this.jer1 = jer1
     }
 
     evaluate(jer2, action){
         this.inputs = [
-            this.jer1.speed, this.jer1.maxHealth, this.jer1.aggression, this.jer1.strength, this.jer1.grip, this.jer1.libido, this.jer1.fear, this.jer1.sociability, this.jer1.maxKids, this.jer1.fertility, this.jer1.infamy, this.jer1.fitness, this.jer1.plantFrequency,
-            jer2.speed, jer2.maxHealth, jer2.aggression, jer2.strength, jer2.grip, jer2.libido, jer2.fear, jer2.sociability, jer2.maxKids, jer2.fertility, jer2.infamy, jer2.plantFrequency,
+            this.jer1.speed, this.jer1.maxHealth, this.jer1.aggression, this.jer1.strength, this.jer1.grip, this.jer1.libido, this.jer1.fear, this.jer1.sociability, this.jer1.maxKids, this.jer1.fertility, this.jer1.infamy, this.jer1.plantFrequency, this.jer1.devotion,
+            jer2.speed, jer2.maxHealth, jer2.aggression, jer2.strength, jer2.grip, jer2.libido, jer2.fear, jer2.sociability, jer2.maxKids, jer2.fertility, jer2.infamy, jer2.plantFrequency, jer2.devotion,
             action
         ];
         return this.net.run(this.inputs);
@@ -15,11 +15,11 @@ class Brain {
 
     learn(jer2, action, outcome, importance){
         this.inputs = [
-            this.jer1.speed, this.jer1.maxHealth, this.jer1.aggression, this.jer1.strength, this.jer1.grip, this.jer1.libido, this.jer1.fear, this.jer1.sociability, this.jer1.maxKids, this.jer1.fertility, this.jer1.infamy, this.jer1.fitness, this.jer1.plantFrequency,
-            jer2.speed, jer2.maxHealth, jer2.aggression, jer2.strength, jer2.grip, jer2.libido, jer2.fear, jer2.sociability, jer2.maxKids, jer2.fertility, jer2.infamy, jer2.plantFrequency,
+            this.jer1.speed, this.jer1.maxHealth, this.jer1.aggression, this.jer1.strength, this.jer1.grip, this.jer1.libido, this.jer1.fear, this.jer1.sociability, this.jer1.maxKids, this.jer1.fertility, this.jer1.infamy, this.jer1.plantFrequency, this.jer1.devotion,
+            jer2.speed, jer2.maxHealth, jer2.aggression, jer2.strength, jer2.grip, jer2.libido, jer2.fear, jer2.sociability, jer2.maxKids, jer2.fertility, jer2.infamy, jer2.plantFrequency, jer2.devotion,
             action
         ];
-        this.net.train(this.inputs, outcome + this.jer1.fitness/500 + map(maxPopulation, 0, maxPopulation, 0, 0.3), importance=1);
+        this.net.train(this.inputs, outcome + map(maxPopulation, 0, maxPopulation, 0, 0.3), importance=1);
         // console.log(this.jer1, "has learnt!")
     }
 }

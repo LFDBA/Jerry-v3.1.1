@@ -11,6 +11,7 @@ let foodBoost = 1;
 let tick = 0;
 let gripping = 0;
 let weakest = [];
+let mutationRate = 0.2;
 
 
 
