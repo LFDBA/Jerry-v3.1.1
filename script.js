@@ -1,14 +1,19 @@
-let amt = 80;
-let maxPopulation = 150;
+let amt = 50;
+let maxPopulation = 120;
 let jerrys = [];
 let speedMultiplier = 1.7;
 let distanceScale = 1.5;
-let libidoScale = 0.8;
+let libidoScale = 0.7;
 let foodAmt = 200;
 let food = []
 let fertilityScale = 3;
 let foodBoost = 1;
 let tick = 0;
+let gripping = 0;
+let weakest = [];
+
+
+
 
 function setup() {
     canvas = createCanvas(1000, 500);
@@ -20,31 +25,21 @@ function setup() {
     for (let i = 0; i < foodAmt; i++){
         food.push(createVector(random(0, width), random(0, height)));
     }
+
 }
 
-function middle(nums){
-    let sum = 0;
-    for(let i = 0; i < nums.length; i++){
-        sum += nums[i];
-    }
-    return sum/nums.length;
-}
-
-function bias(x1, x2, y1, y2){
-    let mid = middle([x1, x2]);
-    let sum = y1 + y2;
-
-    if (sum == 0) return mid;
-
-    return (x1 * y1 + x2 * y2) / sum;
-}
 
 
 
 function draw() {
-
-    if(jerrys.length <= 1){
-        setup();
+    if(jerrys.length <= 3){
+        for (let i = 0; i < amt; i++) {
+            random(jerrys).babyMake(random(jerrys)).pos = createVector(random(0, width), random(0, height));
+            
+        }
+        for (let i = 0; i < foodAmt; i++){
+            food.push(createVector(random(0, width), random(0, height)));
+        }
     }
     
     canvas.background(50, 50, 70);
@@ -55,12 +50,14 @@ function draw() {
         fill(150, 210, 150);
         ellipse(food[i].x, food[i].y, 5, 5);
         for(let j = 0; j < jerrys.length; j++) {
-            if(dist(food[i].x, food[i].y, jerrys[j].pos.x, jerrys[j].pos.y) < jerrys[j].size){
-                jerrys[j].hunger -= foodBoost/5;
-                jerrys[j].health += foodBoost;
-                food = food.filter(nugget => nugget != food[i]);
-                i--;
-                break
+            if(jerrys[j].full == false){
+                if(dist(food[i].x, food[i].y, jerrys[j].pos.x, jerrys[j].pos.y) < jerrys[j].size){
+                    jerrys[j].hunger -= foodBoost/5;
+                    jerrys[j].health += foodBoost;
+                    food = food.filter(nugget => nugget != food[i]);
+                    i--;
+                    break
+                }
             }
         }
     }
@@ -72,11 +69,10 @@ function draw() {
                 let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
                 let threshold = ((width + height) / 30)*distanceScale;
                 if(d < threshold) {
-                    stroke(255, 150, 140, map(d, 0, threshold, 255, 0));
-                    
-                    stroke(jerrys[i].actionColor);
+                    stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
                     line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
-                    
+                    jerrys[i].observe(jerrys[j]);
+                    jerrys[j].observe(jerrys[i]);
                 }
                 if(d < threshold/2) {
                     jerrys[i].evaluate(jerrys[j]);
@@ -88,10 +84,12 @@ function draw() {
                 }
             }
         } 
-        
-    }
 
-    for(let i = 0; i < jerrys.length; i++) {
+        if(mouseIsPressed && dist(mouseX, mouseY, jerrys[i].pos.x, jerrys[i].pos.y) <= jerrys[i].size && gripping == 0){
+            gripping = jerrys[i];
+        }else if (!mouseIsPressed) gripping = 0;
+
+
         jerrys[i].update();
         noStroke();
         fill(jerrys[i].color);
@@ -100,7 +98,19 @@ function draw() {
             jerrys.splice(i, 1);
             i--;
         }
+
+        
     }
+
+    if(gripping != 0 && dist(gripping.pos.x, gripping.pos.y, mouseX, mouseY)) {
+        d = dist(gripping.pos.x, gripping.pos.y, mouseX, mouseY);
+        if(d >= gripping.size/2){
+            gripping.move(createVector(mouseX-gripping.pos.x, mouseY-gripping.pos.y));
+        }else{
+            gripping.vel.mult(0.5);
+        }
+    }
+    
 
     tick++;
 }
