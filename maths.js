@@ -24,3 +24,7 @@ function average(array){
 
     return sum/array.length;
 }
+
+function colour(r, g, b, a){
+    return {r, g, b, a};
+}
