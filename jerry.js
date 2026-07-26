@@ -87,8 +87,6 @@ class jerry {
         if (tick - this.devote >= this.devotion) {
             this.devote = tick;
 
-            console.log("do")
-
             return func(param);
         }
 
@@ -267,13 +265,13 @@ class jerry {
         // }
 
         // ------------------------- NOT JERRY SPECIFIC ------------------------- //
-        if (this.brain.evaluate(other, Actions.APPROACH) > 0.5 + (this.fear - this.sociability) * 0.1 && this.latestAction[0] != 4 && (this.approaching == 0 || this.approaching == other)) {
+        if (this.brain.evaluate(other, Actions.APPROACH) > 0.5 + (this.fear - this.sociability) * 0.1 && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == other)) {
             this.act(this.approach, other);
         } else {
             this.approaching = 0;
         }
 
-        if (this.brain.evaluate(other, Actions.FLEE) > 0.5 + (this.sociability - this.fear) * 0.1 && this.latestAction[0] != 3 && (this.fleeing == 0 || this.fleeing == other)) {
+        if (this.brain.evaluate(other, Actions.FLEE) > 0.5 + (this.sociability - this.fear) * 0.1 && this.latestAction[0] != Actions.APPROACH && (this.fleeing == 0 || this.fleeing == other)) {
             this.act(this.flee, other);
         } else {
             this.fleeing = 0;
@@ -304,7 +302,7 @@ class jerry {
             this.safe.push(other);
         }
 
-        if (random(0, 10 / libidoScale) < this.libido && random(0, 10 / libidoScale) < other.libido && !this.children.includes(other) && !other.children.includes(this) && this.brain.evaluate(other, 2) >= 1 - this.libido) {
+        if (random(0, 10 / libidoScale) < this.libido && random(0, 10 / libidoScale) < other.libido && !this.children.includes(other) && !other.children.includes(this) && this.brain.evaluate(other, Actions.BREED) >= 0.5 - this.libido) {
             if (jerrys.length < maxPopulation && this.children.length < this.maxKids && this.birthPeriod > this.fertility) {
                 console.log("be")
                 this.act(this.babyMake, other);
@@ -329,7 +327,7 @@ class jerry {
 
         this.move(steering);
         this.birthPeriod++;
-        this.hunger += 0.01;
+        this.hunger += 0.001;
         if (this.hunger > 2) {
             this.full = false;
         }
@@ -346,7 +344,6 @@ class jerry {
             this.act(this.plant);
             this.color = color(150, 210, 150);
             this.plantCooldown = 0;
-            console.log("plant")
         }
 
         if (this.health <= 0) {
