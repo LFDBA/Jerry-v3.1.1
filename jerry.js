@@ -25,7 +25,8 @@ class jerry {
         infamy = 0,
         brain = new Brain(this),
         plantFrequency = random(0.008, 0.03),
-        devotion = random(1, 200)
+        devotion = random(1, 200),
+        colourGene = undefined
     ) {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
@@ -41,11 +42,12 @@ class jerry {
 
         this.strength = strengthGene * this.size / 10;
         this.grip = gripGene * (this.strength / 2);
-        this.color = color(255, 255, 255, 255);
-        this.safe = [];
         this.libido = libido;
-
         this.devotion = devotion;
+
+
+        this.safe = [];
+        
         this.devote = 0;
 
         // -------------------------- FEAR AND SOCIABILITY FEAR CAUSES AVOIDING OTHER jerryS, SOCIABILITY CAUSES APPROACHING -------------------------- //
@@ -69,6 +71,28 @@ class jerry {
         this.approaching = 0;
         this.fleeing = 0;
 
+        this.lastLearnt = [];
+
+
+        if(colourGene == 100) this.color = colourGene;
+        else{
+            console.log("oof")
+            this.color = colour(127.5, 127.5, 127.5, 127.5);
+            this.color.r += this.aggression*100;
+            this.color.g += this.plantFrequency*1000;
+            this.color.b += this.devotion/2;
+            this.color.r += this.sociability*30;
+            this.color.g += this.sociability*30;
+            this.color.b += this.sociability*30;
+            this.color.r += this.fear*30;
+            this.color.g += this.fear*30;
+            this.color.b += this.fear*30;
+            this.color.r += this.strength*30;
+            this.color.g += this.strength*10;
+            this.color.r += this.libido*30;
+            this.color.b += this.libido*30;
+            console.log(this.color)
+        }
 
         // actions //
         this.approach = this.approach.bind(this);
@@ -103,6 +127,7 @@ class jerry {
         this.infamy++;
 
         this.brain.learn(other, Actions.EAT, 1, this.fitness / 1000);
+        this.lastLearnt = [other, Actions.EAT, 1, this.fitness / 1000];
     }
 
     babyMake(other) {
@@ -144,7 +169,9 @@ class jerry {
         console.log("babyMake")
 
         this.brain.learn(other, Actions.BREED, 1, this.fitness / 1000);
-        this.color = color(240, 150, 150)
+        this.lastLearnt = [other, Actions.BREED, 1, this.fitness / 1000];
+
+        this.currentColor = color(240, 150, 150);
 
         return child;
     }
@@ -163,6 +190,7 @@ class jerry {
         this.approaching = other;
 
         this.brain.learn(other, Actions.APPROACH, 1, this.fitness / 1000);
+        this.lastLearnt = [other, Actions.APPROACH, 1, this.fitness / 1000];
     }
 
     flee(other) {
@@ -178,6 +206,7 @@ class jerry {
         this.fleeing = other;
 
         this.brain.learn(other, Actions.FLEE, 1, this.fitness / 1000);
+        this.lastLearnt = [other, Actions.FLEE, 1, this.fitness / 1000];
     }
 
     plant() {
@@ -187,8 +216,10 @@ class jerry {
         this.latestAction[1] = this;
 
         this.brain.learn(this, Actions.PLANT, 1, this.fitness / 1000);
+        this.lastLearnt = [this, Actions.PLANT, 1, this.fitness / 1000];
 
         this.devote = 0;
+        console.log("plan")
     }
 
 
@@ -196,6 +227,7 @@ class jerry {
 
     die(killer) {
         this.brain.learn(this.latestAction[1], this.latestAction[0], 0);
+        this.lastLearnt = [this.latestAction[1], this.latestAction[0], 0];
         this.dead = true;
     }
 
@@ -278,6 +310,10 @@ class jerry {
         } else {
             this.fleeing = 0;
         }
+
+        if(other.lastLearnt.length == 4){
+            this.brain.learn(other.lastLearnt[0], other.lastLearnt[1], other.lastLearnt[2], other.lastLearnt[3]);
+        }
     }
 
     setActionAlpha(alpha) {
@@ -339,12 +375,18 @@ class jerry {
         this.fitness++;
         // this.fitness -= this.health/8;
         this.health -= this.hunger / 200;
-        this.color = color(255, 255, 255, map(this.health, 0, this.maxHealth, 0, 255));
+
+        if(colours){
+            this.currentColor = color(this.color.r, this.color.g, this.color.b, map(this.health, 0, this.maxHealth, 0, 255));
+        }else{
+            this.currentColor = color(255, 255, 255, map(this.health, 0, this.maxHealth, 0, 255));
+        }
+        
 
         if (this.brain.evaluate(this, Actions.PLANT) > 0.5 && this.plantCooldown > 5) {
             this.full = true;
             this.act(this.plant);
-            this.color = color(150, 210, 150);
+            this.currentColor = color(150, 210, 150);
             this.plantCooldown = 0;
         }
 

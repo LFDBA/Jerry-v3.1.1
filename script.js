@@ -1,5 +1,5 @@
 let amt = 50;
-let maxPopulation = 150;
+let maxPopulation = 100;
 let jerrys = [];
 let speedMultiplier = 1.7;
 let distanceScale = 1.5;
@@ -14,6 +14,7 @@ let weakest = [];
 let mutationRate = 0.2;
 let maxLive = 0;
 let extinctions = 0;
+let colours = false;
 
 
 
@@ -54,7 +55,6 @@ function draw() {
     }
     
     
-
 
     for(let i = 0; i < food.length; i++){
         noStroke();
@@ -103,7 +103,7 @@ function draw() {
 
         jerrys[i].update();
         noStroke();
-        fill(jerrys[i].color);
+        fill(jerrys[i].currentColor);
         ellipse(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[i].size);
         if(jerrys[i].dead) {
             jerrys.splice(i, 1);
