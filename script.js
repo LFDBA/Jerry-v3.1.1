@@ -13,6 +13,7 @@ let gripping = 0;
 let weakest = [];
 let mutationRate = 0.2;
 let maxLive = 0;
+let extinctions = 0;
 
 
 
@@ -46,6 +47,9 @@ function draw() {
             
             food.push(createVector(random(0, width), random(0, height)));
         }
+
+        extinctions++;
+
         tick = 0;
     }
     
@@ -135,6 +139,11 @@ function draw() {
     textSize(10);
     fill(255);
     text(jerrys.length, width-10, 10);
+
+    textAlign(LEFT, CENTER);
+    textSize(10);
+    fill(255);
+    text(extinctions, 10, height-10);
 
     tick++;
 }
