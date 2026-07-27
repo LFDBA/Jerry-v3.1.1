@@ -155,7 +155,7 @@ class jerry {
             this.direction = createVector(random(-1, 1), random(-1, 1));
         }
         this.steer = this.direction.copy().normalize();
-        this.actionColor = colour(0, 255, 0);
+        this.actionColor = colour(140, 220, 140);
 
         this.latestAction[0] = Actions.APPROACH;
         this.latestAction[1] = other;
@@ -187,6 +187,8 @@ class jerry {
         this.latestAction[1] = this;
 
         this.brain.learn(this, Actions.PLANT, 1, this.fitness / 1000);
+
+        this.devote = 0;
     }
 
 
@@ -289,7 +291,7 @@ class jerry {
         }
 
         if (random(0, 1) < this.aggression && !this.safe.includes(other) && this.brain.evaluate(other, Actions.EAT) >= this.sociability) {
-            other.health -= 15 / 255
+            other.health -= 20 / 255
             if (other.health <= 0) {
                 this.act(this.eat, other);
             }
@@ -339,7 +341,7 @@ class jerry {
         this.health -= this.hunger / 200;
         this.color = color(255, 255, 255, map(this.health, 0, this.maxHealth, 0, 255));
 
-        if (this.brain.evaluate(this, Actions.PLANT) > 0.5 && this.plantCooldown > 3) {
+        if (this.brain.evaluate(this, Actions.PLANT) > 0.5 && this.plantCooldown > 5) {
             this.full = true;
             this.act(this.plant);
             this.color = color(150, 210, 150);

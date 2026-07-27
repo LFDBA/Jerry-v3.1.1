@@ -1,5 +1,5 @@
 let amt = 50;
-let maxPopulation = 200;
+let maxPopulation = 150;
 let jerrys = [];
 let speedMultiplier = 1.7;
 let distanceScale = 1.5;
@@ -12,7 +12,7 @@ let tick = 0;
 let gripping = 0;
 let weakest = [];
 let mutationRate = 0.2;
-
+let maxLive = 0;
 
 
 
@@ -33,17 +33,23 @@ function setup() {
 
 
 function draw() {
+    
+    canvas.background(50, 50, 70);
+    
     if(jerrys.length <= 3){
         for (let i = 0; i < amt; i++) {
             random(jerrys).babyMake(random(jerrys)).pos = createVector(random(0, width), random(0, height));
             
         }
+        food = [];
         for (let i = 0; i < foodAmt; i++){
+            
             food.push(createVector(random(0, width), random(0, height)));
         }
+        tick = 0;
     }
     
-    canvas.background(50, 50, 70);
+    
 
 
     for(let i = 0; i < food.length; i++){
@@ -111,7 +117,24 @@ function draw() {
             gripping.vel.mult(0.5);
         }
     }
-    
+    textAlign(CENTER, CENTER);
+    textSize(10);
+    fill(255, 140, 140);
+    text(tick, 10, 10);
+
+    if(tick > maxLive){
+        maxLive = tick;
+    }
+
+    textAlign(CENTER, CENTER);
+    textSize(10);
+    fill(140, 220, 140);
+    text(maxLive, width-10, height-10);
+
+    textAlign(CENTER, CENTER);
+    textSize(10);
+    fill(255);
+    text(jerrys.length, width-10, 10);
 
     tick++;
 }
