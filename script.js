@@ -117,7 +117,7 @@ function draw() {
             gripping.vel.mult(0.5);
         }
     }
-    textAlign(CENTER, CENTER);
+    textAlign(LEFT, CENTER);
     textSize(10);
     fill(255, 140, 140);
     text(tick, 10, 10);
@@ -126,12 +126,12 @@ function draw() {
         maxLive = tick;
     }
 
-    textAlign(CENTER, CENTER);
+    textAlign(RIGHT, CENTER);
     textSize(10);
     fill(140, 220, 140);
     text(maxLive, width-10, height-10);
 
-    textAlign(CENTER, CENTER);
+    textAlign(RIGHT, CENTER);
     textSize(10);
     fill(255);
     text(jerrys.length, width-10, 10);
