@@ -1,5 +1,5 @@
-let amt = 50;
-let maxPopulation = 100;
+let amt = 15;
+let maxPopulation = 50;
 let jerrys = [];
 let speedMultiplier = 15;
 let distanceScale = 1.5;
@@ -15,6 +15,7 @@ let mutationRate = 0.2;
 let maxLive = 0;
 let extinctions = 0;
 let colours = true;
+let wall = [];
 
 
 
@@ -98,8 +99,18 @@ function draw() {
 
         if(mouseIsPressed && dist(mouseX, mouseY, jerrys[i].pos.x, jerrys[i].pos.y) <= jerrys[i].size && gripping == 0){
             gripping = jerrys[i];
-        }else if (!mouseIsPressed) gripping = 0;
+        }
+        else if (!mouseIsPressed) gripping = 0;
+        
+        for(let i = 0; i < wall.length; i++){
+            if (mouseIsPressed){
+                if(dist(mouseX, mouseY, wall[i].x, wall[i].y)) wall.push(createVector(mouseX, mouseY));
+            }
+            fill(100);
+            rect(mouseX, mouseY, 10);
+        }
 
+        
 
         jerrys[i].update();
         noStroke();
