@@ -93,10 +93,14 @@ function draw() {
                 let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
                 let threshold = ((width + height) / 30)*distanceScale;
                 if(d < threshold) {
-                    stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
-                    line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
-                    jerrys[i].observe(jerrys[j]);
-                    jerrys[j].observe(jerrys[i]);
+
+                    if(!walls.some(num => num.x >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x-wallSize && num.x <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x+wallSize && num.y >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y-wallSize && num.y <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y+wallSize)){
+                        stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
+                        line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
+                        jerrys[i].observe(jerrys[j]);
+                        jerrys[j].observe(jerrys[i]);
+                    }
+                    
                 }
                 if(d < threshold/2) {
                     jerrys[i].evaluate(jerrys[j]);
@@ -181,3 +185,9 @@ function mouseDown() {
 window.addEventListener('contextmenu', (event) => {
     event.preventDefault();
 });
+
+function keyPressed(){
+    if(key === 's'){
+        random(jerrys).babyMake(random(jerrys)).pos = createVector(mouseX, mouseY);
+    }
+}

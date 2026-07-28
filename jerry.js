@@ -107,11 +107,6 @@ class jerry {
 
     act(func, param) {
 
-        if(param instanceof jerry){
-            if(walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
-                
-            }
-        }
         if (tick - this.devote >= this.devotion) {
             this.devote = tick;
 
