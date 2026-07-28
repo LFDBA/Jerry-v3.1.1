@@ -1,7 +1,7 @@
 let amt = 50;
 let maxPopulation = 100;
 let jerrys = [];
-let speedMultiplier = 1.7;
+let speedMultiplier = 15;
 let distanceScale = 1.5;
 let libidoScale = 0.8;
 let foodAmt = 200;
@@ -14,7 +14,7 @@ let weakest = [];
 let mutationRate = 0.2;
 let maxLive = 0;
 let extinctions = 0;
-let colours = false;
+let colours = true;
 
 
 

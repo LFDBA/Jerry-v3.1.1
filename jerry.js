@@ -30,11 +30,12 @@ class jerry {
     ) {
         this.pos = createVector(x, y);
         this.vel = createVector(0, 0);
-        this.speed = speed;
+        
         this.hunger = 0;
         this.maxHealth = maxHealth;
         this.health = this.maxHealth;
         this.size = this.health * 10;
+        this.speed = speed / (this.size);
         this.aggression = aggression;
 
         this.strengthGene = strengthGene;
