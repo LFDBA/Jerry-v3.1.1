@@ -1,9 +1,9 @@
-let amt = 15;
-let maxPopulation = 50;
+let amt = 30;
+let maxPopulation = 80;
 let jerrys = [];
 let speedMultiplier = 15;
 let distanceScale = 1.5;
-let libidoScale = 0.8;
+let libidoScale = 6;
 let foodAmt = 200;
 let food = []
 let fertilityScale = 1;
@@ -15,7 +15,9 @@ let mutationRate = 0.2;
 let maxLive = 0;
 let extinctions = 0;
 let colours = true;
-let wall = [];
+let walls = [];
+let wallSize = 10;
+let mousePos;
 
 
 
@@ -29,7 +31,7 @@ function setup() {
     for (let i = 0; i < foodAmt; i++){
         food.push(createVector(random(0, width), random(0, height)));
     }
-
+    rectMode(CENTER);
 }
 
 
@@ -37,8 +39,13 @@ function setup() {
 
 function draw() {
     
+    mousePos = createVector(mouseX, mouseY);
+
+    if(mouseIsPressed) mouseDown();
+
     canvas.background(50, 50, 70);
-    
+
+
     if(jerrys.length <= 3){
         for (let i = 0; i < amt; i++) {
             random(jerrys).babyMake(random(jerrys)).pos = createVector(random(0, width), random(0, height));
@@ -74,6 +81,11 @@ function draw() {
         }
     }
 
+    for(wall of walls){
+        fill(255);
+        rect(wall.x, wall.y, wallSize);
+    }
+
     for(let i = 0; i < jerrys.length; i++) {
         
         for(let j = 0; j < jerrys.length; j++) {
@@ -101,15 +113,6 @@ function draw() {
             gripping = jerrys[i];
         }
         else if (!mouseIsPressed) gripping = 0;
-        
-        for(let i = 0; i < wall.length; i++){
-            if (mouseIsPressed){
-                if(dist(mouseX, mouseY, wall[i].x, wall[i].y)) wall.push(createVector(mouseX, mouseY));
-            }
-            fill(100);
-            rect(mouseX, mouseY, 10);
-        }
-
         
 
         jerrys[i].update();
@@ -158,3 +161,23 @@ function draw() {
 
     tick++;
 }
+
+
+function mouseDown() {
+    if(mouseButton.left){
+        if (walls.length == 0) walls.push(mousePos);
+        if(!walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
+            walls.push(mousePos);
+        }
+    }else{
+        if (keyIsDown(SHIFT)) {
+            walls = [];
+        }else if(walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
+            walls = walls.filter(num => !(num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2));
+        }
+    }
+}
+
+window.addEventListener('contextmenu', (event) => {
+    event.preventDefault();
+});
