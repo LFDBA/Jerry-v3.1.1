@@ -112,7 +112,6 @@ function draw() {
                     }
                     
                 }
-<<<<<<< HEAD
                 if(d < threshold/2) {
                     jerrys[i].evaluate(jerrys[j]);
                     jerrys[j].evaluate(jerrys[i]);
@@ -148,8 +147,6 @@ function draw() {
                     }
                     
                 }
-=======
->>>>>>> e9357a0fb507e8ec059c85173e6abb6796f7fc14
             }
         } 
 
