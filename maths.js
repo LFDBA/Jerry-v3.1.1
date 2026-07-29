@@ -27,3 +27,13 @@ function getLine(p1, p2, x){
     y = m*x+b;
     return createVector(x, y);
 }
+
+function isIn(p1, p2, item) {
+    const minX = Math.min(p1.x, p2.x);
+    const maxX = Math.max(p1.x, p2.x);
+    const minY = Math.min(p1.y, p2.y);
+    const maxY = Math.max(p1.y, p2.y);
+
+    return item.x >= minX && item.x <= maxX &&
+           item.y >= minY && item.y <= maxY;
+}

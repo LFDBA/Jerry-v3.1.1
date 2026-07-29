@@ -133,7 +133,6 @@ class jerry {
         
         this.acc = createVector(other.pos.x - this.pos.x, other.pos.y - this.pos.y);
         other.acc = createVector(this.pos.x - other.pos.x, this.pos.y - other.pos.y);
-        console.log("bmw");
 
         let child;
         if (random(0, 1) >= 1 - mutationRate) {
@@ -172,7 +171,6 @@ class jerry {
 
         this.currentColor = color(240, 150, 150);
         this.acc = createVector((this.pos.x + other.pos.x) * 2, (this.pos.y + other.pos.y) * 2);
-        console.log("baby twas mayed")
         return child;
     }
 
