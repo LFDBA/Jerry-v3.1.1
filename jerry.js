@@ -35,7 +35,7 @@ class jerry {
         this.maxHealth = maxHealth;
         this.health = this.maxHealth;
         this.size = this.health * 10;
-        this.speed = speed / (this.size);
+        this.speed = (speed / (this.size));
         this.aggression = aggression;
 
         this.strengthGene = strengthGene;
@@ -79,8 +79,8 @@ class jerry {
         else {
             this.color = colour(127.5, 127.5, 127.5, 127.5);
             this.color.r += this.aggression * 100;
-            this.color.g += this.plantFrequency * 1000;
-            this.color.b += this.devotion / 2;
+            this.color.g += (this.plantFrequency * 1000);
+            this.color.b += (this.devotion / 2);
             this.color.r += this.sociability * 30;
             this.color.g += this.sociability * 30;
             this.color.b += this.sociability * 30;
@@ -135,7 +135,7 @@ class jerry {
 
     act(func, param) {
 
-        if (tick - this.devote >= this.devotion) {
+        if (tick - this.devote >= this.devotion / tickSpeed) {
             this.devote = tick;
 
             return func(param);
@@ -271,15 +271,15 @@ class jerry {
 
 
 
-    move(target = createVector(random(-1, 1) * (this.speed / 10), random(-1, 1) * (this.speed / 10))) {
+    move(target = createVector(random(-1, 1) * ((this.speed * tickSpeed) / 10), random(-1, 1) * ((this.speed * tickSpeed) / 10))) {
         this.acc = target.copy();
         this.vel.add(this.acc);
-        this.vel.limit(this.speed);
+        this.vel.limit(this.speed * tickSpeed);
         this.pos.add(this.vel);
-        if ((this.pos.x > width - this.size / 2 && this.vel.x >= 0) || (this.pos.x < 0 + this.size / 2 && this.vel.x <= 0)) {
+        if ((this.pos.x > width - this.size / 2 - tickSpeed/2 && this.vel.x >= 0) || (this.pos.x < 0 + this.size / 2 + tickSpeed/2 && this.vel.x <= 0)) {
             this.vel.x *= -1;
         }
-        if ((this.pos.y > height - this.size / 2 && this.vel.y >= 0) || (this.pos.y < 0 + this.size / 2 && this.vel.y <= 0)) {
+        if ((this.pos.y > height - this.size / 2 - tickSpeed/2 && this.vel.y >= 0) || (this.pos.y < 0 + this.size / 2 + tickSpeed/2 && this.vel.y <= 0)) {
             this.vel.y *= -1;
         }
 
@@ -398,7 +398,7 @@ class jerry {
         }
 
         if (random(0, 10 / libidoScale) < this.libido && random(0, 10 / libidoScale) < other.libido && !this.children.includes(other) && !other.children.includes(this) && this.brain.evaluate(other, Actions.BREED) >= 0.5 - this.libido) {
-            if (jerrys.length < maxPopulation && this.children.length < this.maxKids && this.birthPeriod > this.fertility) {
+            if (jerrys.length < maxPopulation && this.children.length < this.maxKids && this.birthPeriod > this.fertility/tickSpeed) {
                 this.act(this.babyMake, other);
                 this.birthPeriod = 0;
                 this.actionColor = colour(150, 210, 150);
@@ -411,26 +411,26 @@ class jerry {
     }
 
     update() {
-        this.plantCooldown += this.plantFrequency;
+        this.plantCooldown += this.plantFrequency * tickSpeed;
         let steering = this.steer.copy();
         this.steer.set(0, 0);
 
         if (steering.mag() === 0) {
-            steering = createVector(random(-1, 1) * (this.speed / 10), random(-1, 1) * (this.speed / 10));
+            steering = createVector(random(-1, 1) * ((this.speed * tickSpeed) / 10), random(-1, 1) * ((this.speed * tickSpeed) / 10));
         }
 
         this.move(steering);
-        this.birthPeriod++;
-        this.hunger += 0.001;
-        if (this.hunger > this.health/2) {
+        this.birthPeriod+=tickSpeed;
+        this.hunger += 0.001 * tickSpeed;
+        if (this.hunger * tickSpeed > this.health/2) {
             this.full = false;
         }
-        if (this.hunger < 0) {
+        if (this.hunger * tickSpeed < 0) {
             this.full = true;
         }
         this.fitness++;
         // this.fitness -= this.health/8;
-        this.health -= this.hunger / 200;
+        this.health -= (this.hunger / 200) * tickSpeed;
 
         if (colours) {
             this.currentColor = color(this.color.r, this.color.g, this.color.b, map(this.health, 0, this.maxHealth, 0, 255));

@@ -20,6 +20,8 @@ let wallSize = 20;
 let mousePos;
 let analyzing;
 let openStats = false;
+let tickSpeed = 1;
+let slider;
 
 
 
@@ -34,13 +36,19 @@ function setup() {
         food.push(createVector(random(0, width), random(0, height)));
     }
     rectMode(CENTER);
+    slider = createSlider(0.1, 50)
+    slider.value(1);
+    slider.position(10, 10);
+    slider.size(80);
 }
 
 
 
 
 function draw() {
-    
+
+    tickSpeed = slider.value();
+
     mousePos = createVector(mouseX, mouseY);
 
     if(mouseIsPressed) mouseDown();
@@ -192,7 +200,7 @@ function draw() {
     textAlign(LEFT, CENTER);
     textSize(10);
     fill(255, 140, 140);
-    text(tick, 10, 10);
+    text(round(tick), 10, 10);
 
     if(tick > maxLive){
         maxLive = tick;
@@ -201,7 +209,7 @@ function draw() {
     textAlign(RIGHT, CENTER);
     textSize(10);
     fill(140, 220, 140);
-    text(maxLive, width-10, height-10);
+    text(round(maxLive), width-10, height-10);
 
     textAlign(RIGHT, CENTER);
     textSize(10);
@@ -233,7 +241,7 @@ function draw() {
         }
     }
     strokeWeight(1);
-    tick++;
+    tick+=tickSpeed;
 }
 
 
