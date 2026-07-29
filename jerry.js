@@ -93,6 +93,34 @@ class jerry {
             this.color.b += this.libido * 30;
         }
 
+        this.attributes = [
+            this.hunger,
+            this.maxHealth,
+            this.health,
+            this.size,
+            this.speed,
+            this.aggression,
+            this.grip,
+            this.strength,
+            this.libido,
+            this.devotion,
+            this.devote,
+            this.safe,
+            this.fear,
+            this.sociability,
+            this.children,
+            this.maxKids,
+            this.fitness,
+            this.fertility,
+            this.birthPeriod,
+            this.age,
+            this.full,
+            this.infamy,
+            this.latestAction,
+            this.plantFrequency,
+            this.plantCooldown
+        ];
+
         // actions //
         this.approach = this.approach.bind(this);
         this.flee = this.flee.bind(this);
@@ -212,11 +240,15 @@ class jerry {
         let pushedFood = createVector(this.pos.x, this.pos.y);
         food.push(pushedFood);
 
+        this.hunger -= foodBoost/5;
+        this.health += foodBoost;
+
         this.latestAction[0] = Actions.PLANT;
         this.latestAction[1] = this;
 
         
         this.currentColor = color(150, 210, 150);
+        
 
         this.brain.learn(this, Actions.PLANT, 1, this.fitness / 1000);
         this.lastLearnt = [this, Actions.PLANT, 1, this.fitness / 1000];
@@ -390,7 +422,7 @@ class jerry {
         this.move(steering);
         this.birthPeriod++;
         this.hunger += 0.001;
-        if (this.hunger > 2) {
+        if (this.hunger > this.health/2) {
             this.full = false;
         }
         if (this.hunger < 0) {
@@ -409,6 +441,7 @@ class jerry {
 
         if (this.brain.evaluate(this, Actions.PLANT) > 0.5 && this.plantCooldown > 5) {
             this.full = true;
+
             this.act(this.plant);
             
         }

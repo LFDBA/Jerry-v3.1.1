@@ -18,6 +18,8 @@ let colours = true;
 let walls = [];
 let wallSize = 20;
 let mousePos;
+let analyzing;
+let openStats = false;
 
 
 
@@ -91,11 +93,20 @@ function draw() {
         for(let j = 0; j < jerrys.length; j++) {
             if(i != j) {
                 let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
+                let dy = jerrys[i].pos.y - jerrys[j].pos.y;
+                let dx = jerrys[i].pos.x - jerrys[j].pos.x;
+
                 let threshold = ((width + height) / 30)*distanceScale;
-                if(!walls.some(num => num.x >= constrain(getLine(jerrys[i].pos, jerrys[j].pos, num.x).x-wallSize, jerrys[i].pos.x-d, jerrys[i].pos.x+d) && num.x <= constrain(getLine(jerrys[i].pos, jerrys[j].pos, num.x).x+wallSize, jerrys[i].pos.x-d, jerrys[i].pos.x+d) && num.y >= constrain(getLine(jerrys[i].pos, jerrys[j].pos, num.x).y-wallSize, jerrys[i].pos.y-d, jerrys[i].pos.y+d) && num.y <= constrain(getLine(jerrys[i].pos, jerrys[j].pos, num.x).y+wallSize, jerrys[i].pos.y-d, jerrys[i].pos.y+d))){
+                if(d < threshold) { 
+                    if(!walls.some(num => 
+                        num.y >= constrain(getLine(jerrys[i].pos, jerrys[j].pos, num.x).y-(wallSize/2+jerrys[i].size/2), jerrys[i].pos.y-d, jerrys[i].pos.y+d) && 
+                        num.y <= constrain(getLine(jerrys[i].pos, jerrys[j].pos, num.x).y+(wallSize/2+jerrys[i].size/2), jerrys[i].pos.y-d, jerrys[i].pos.y+d) ||
+                        num.x >= constrain(getLine(jerrys[i].pos, jerrys[j].pos, undefined, num.y).x-(wallSize/2+jerrys[i].size/2), jerrys[i].pos.x-d, jerrys[i].pos.x+d) &&
+                        num.x <= constrain(getLine(jerrys[i].pos, jerrys[j].pos, undefined, num.y).x+(wallSize/2+jerrys[i].size/2), jerrys[i].pos.x-d, jerrys[i].pos.x+d)
+                    )){
                     
 
-                    if(d < threshold) { 
+                    
                         stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
                         line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
                         jerrys[i].observe(jerrys[j]);
@@ -109,31 +120,7 @@ function draw() {
                             jerrys[i].safe = jerrys[i].safe.filter(jerry => jerry != jerrys[j]);
                             jerrys[j].safe = jerrys[j].safe.filter(jerry => jerry != jerrys[i]);
                         }
-                    }
-                    
-                }
-                if(d < threshold/2) {
-                    jerrys[i].evaluate(jerrys[j]);
-                    jerrys[j].evaluate(jerrys[i]);
-                }
-                else{
-                    jerrys[i].safe = jerrys[i].safe.filter(jerry => jerry != jerrys[j]);
-                    jerrys[j].safe = jerrys[j].safe.filter(jerry => jerry != jerrys[i]);
-                }
 
-                for(wall of walls){
-                    if(!isIn(jerrys[i].pos, jerrys[j].pos, wall) && !walls.some(num => num.x >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x-wallSize && num.x <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x+wallSize && num.y >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y-wallSize && num.y <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y+wallSize)){
-                
-                        let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
-                        let threshold = ((width + height) / 30)*distanceScale;
-                        if(d < threshold) {
-
-                    
-                            stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
-                            line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
-                            jerrys[i].observe(jerrys[j]);
-                            jerrys[j].observe(jerrys[i]);
-                        }
                         if(d < threshold/2) {
                             jerrys[i].evaluate(jerrys[j]);
                             jerrys[j].evaluate(jerrys[i]);
@@ -142,11 +129,37 @@ function draw() {
                             jerrys[i].safe = jerrys[i].safe.filter(jerry => jerry != jerrys[j]);
                             jerrys[j].safe = jerrys[j].safe.filter(jerry => jerry != jerrys[i]);
                         }
-
-                        console.log("idka")
                     }
                     
                 }
+                
+
+                // for(wall of walls){
+                //     if(!isIn(jerrys[i].pos, jerrys[j].pos, wall) && !walls.some(num => num.x >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x-wallSize && num.x <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x+wallSize && num.y >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y-wallSize && num.y <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y+wallSize)){
+                
+                //         let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
+                //         let threshold = ((width + height) / 30)*distanceScale;
+                //         if(d < threshold) {
+
+                    
+                //             stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
+                //             line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
+                //             jerrys[i].observe(jerrys[j]);
+                //             jerrys[j].observe(jerrys[i]);
+                //         }
+                //         if(d < threshold/2) {
+                //             jerrys[i].evaluate(jerrys[j]);
+                //             jerrys[j].evaluate(jerrys[i]);
+                //         }
+                //         else{
+                //             jerrys[i].safe = jerrys[i].safe.filter(jerry => jerry != jerrys[j]);
+                //             jerrys[j].safe = jerrys[j].safe.filter(jerry => jerry != jerrys[i]);
+                //         }
+
+                //         console.log("idka")
+                //     }
+                    
+                // }
             }
         } 
 
@@ -200,12 +213,32 @@ function draw() {
     fill(255);
     text(extinctions, 10, height-10);
 
+
+    
+    if(openStats) {
+        fill(150);
+        stroke(100);
+        strokeWeight(3);
+        rectMode(CORNER);
+        rect(analyzing.pos.x, analyzing.pos.y, 110, 300, 20);
+        textAlign(CENTER, CENTER);
+
+        for(let i = 0; i < analyzing.attributes.length; i++){
+            let attribute = analyzing.attributes[i];
+            if(typeof attribute === 'number'){
+                text(round(attribute, 3), analyzing.pos.x+55, (analyzing.pos.y+i*12)+20);
+            }else{
+                text(attribute, analyzing.pos.x+55, (analyzing.pos.y+i*12)+20);
+            }
+        }
+    }
+    strokeWeight(1);
     tick++;
 }
 
 
 function mouseDown() {
-    if(mouseButton.left){
+    if(mouseButton.left && keyIsDown(SHIFT)){
         if (walls.length == 0) walls.push(mousePos);
         if(!walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
             walls.push(mousePos);
@@ -219,12 +252,27 @@ function mouseDown() {
     }
 }
 
+// function mouseClicked(){
+//     for(j of jerrys){
+//         if(dist(j.pos.x, j.pos.y, mouseX, mouseY) < j.size/2){
+//             openStats = true;
+//             analyzing = j;
+//             break;
+//         }else{
+//             openStats = false;
+//         }
+//     }
+// }
+
 window.addEventListener('contextmenu', (event) => {
     event.preventDefault();
 });
 
 function keyPressed(){
     if(key === 's'){
+        jerrys.push(new jerry(mouseX, mouseY));
+    }
+    if(key === 'b'){
         random(jerrys).babyMake(random(jerrys)).pos = createVector(mouseX, mouseY);
     }
 }

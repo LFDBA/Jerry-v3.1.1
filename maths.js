@@ -21,10 +21,15 @@ function bias(x1, x2, y1, y2){
     return (x1 * y1 + x2 * y2) / sum;
 }
 
-function getLine(p1, p2, x){
+function getLine(p1, p2, x, y){
     m = (p2.y - p1.y)/(p2.x - p1.x);
     b = p1.y - m*p1.x;
-    y = m*x+b;
+    if(x != undefined){
+        y = m*x+b;
+    }else{
+        x = (y-b)/m;
+    }
+
     return createVector(x, y);
 }
 
