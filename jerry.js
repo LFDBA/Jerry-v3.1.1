@@ -315,7 +315,7 @@ class jerry {
         }
 
         for (wall of walls){
-            const minDist = this.size / 2 + wallSize / 2;
+            const minDist = this.size / 2 + wallSize / 2  + tickSpeed/2;
             const currentDist = dist(this.pos.x, this.pos.y, wall.x, wall.y);
             const overlap = minDist - currentDist;
 

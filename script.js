@@ -56,7 +56,7 @@ function draw() {
     canvas.background(50, 50, 70);
 
 
-    if(jerrys.length <= 3){
+    if(jerrys.length <= 3 && jerrys.length > 0){
         for (let i = 0; i < amt; i++) {
             random(jerrys).babyMake(random(jerrys)).pos = createVector(random(0, width), random(0, height));
             
