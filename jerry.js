@@ -72,6 +72,8 @@ class jerry {
         this.approaching = 0;
         this.fleeing = 0;
 
+        this.blindTo = [];
+
         this.lastLearnt = [];
 
 
