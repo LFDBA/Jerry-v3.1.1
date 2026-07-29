@@ -279,9 +279,14 @@ window.addEventListener('contextmenu', (event) => {
 function keyPressed(){
     if(key === 's'){
         jerrys.push(new jerry(mouseX, mouseY));
+        maxPopulation = jerrys.length;
     }
     if(key === 'b'){
         random(jerrys).babyMake(random(jerrys)).pos = createVector(mouseX, mouseY);
+        maxPopulation = jerrys.length;
     }
-    maxPopulation = jerrys.length;
+    if(key === 'r'){
+        jerrys.length = 0;
+    }
+    
 }
