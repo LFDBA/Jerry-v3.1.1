@@ -275,4 +275,5 @@ function keyPressed(){
     if(key === 'b'){
         random(jerrys).babyMake(random(jerrys)).pos = createVector(mouseX, mouseY);
     }
+    maxPopulation = jerrys.length;
 }
