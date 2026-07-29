@@ -241,7 +241,12 @@ function draw() {
         }
     }
     strokeWeight(1);
-    tick+=tickSpeed;
+    if(jerrys.length > 0){
+        tick+=tickSpeed;
+    }else{
+        tick = 0;
+    }
+    
 }
 
 
