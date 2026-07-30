@@ -55,7 +55,7 @@ function setup() {
 function draw() {
     
     canvas = createCanvas(wSlider.value(), 500);
-    canvas.position(-(window.innerWidth/2) + 1000, (window.innerHeight/2) - (height/2));
+    canvas.position((window.innerWidth/2)-500, (window.innerHeight/2) - (height/2));
     
     tickSpeed = tSlider.value();
 

@@ -240,8 +240,8 @@ class jerry {
         let pushedFood = createVector(this.pos.x, this.pos.y);
         food.push(pushedFood);
 
-        this.hunger -= foodBoost/5;
-        this.health += foodBoost;
+        this.hunger -= foodBoost/10;
+        this.health += foodBoost/2;
 
         this.latestAction[0] = Actions.PLANT;
         this.latestAction[1] = this;
@@ -272,6 +272,27 @@ class jerry {
 
 
     move(target = createVector(random(-1, 1) * ((this.speed * tickSpeed) / 10), random(-1, 1) * ((this.speed * tickSpeed) / 10))) {
+
+        for (wall of walls){
+            const minDist = this.size / 2 + wallSize/2 + tickSpeed/2 + 0.25;
+            const currentDist = dist(this.pos.x-wallSize/2, this.pos.y-wallSize/2, wall.x, wall.y);
+            const overlap = minDist - currentDist;
+
+            if (overlap >= 0) {
+                const normal = p5.Vector.sub(this.pos, wall);
+                if (normal.mag() === 0) {
+                    normal.set(random(-1, 1), random(-1, 1));
+                }
+                normal.normalize();
+
+                this.pos.add(normal.copy().mult(overlap * 0.6));
+                const relVel = this.vel.dot(normal);
+                if (relVel < 0) {
+                    this.vel.sub(normal.mult(relVel * 1.2));
+                }
+            }
+        }
+
         this.acc = target.copy();
         this.vel.add(this.acc);
         this.vel.limit(this.speed * tickSpeed);
@@ -301,26 +322,6 @@ class jerry {
 
             if (overlap > 0) {
                 const normal = p5.Vector.sub(this.pos, other.pos);
-                if (normal.mag() === 0) {
-                    normal.set(random(-1, 1), random(-1, 1));
-                }
-                normal.normalize();
-
-                this.pos.add(normal.copy().mult(overlap * 0.6));
-                const relVel = this.vel.dot(normal);
-                if (relVel < 0) {
-                    this.vel.sub(normal.mult(relVel * 1.2));
-                }
-            }
-        }
-
-        for (wall of walls){
-            const minDist = this.size / 2 + wallSize / 2  + tickSpeed/2;
-            const currentDist = dist(this.pos.x, this.pos.y, wall.x, wall.y);
-            const overlap = minDist - currentDist;
-
-            if (overlap > 0) {
-                const normal = p5.Vector.sub(this.pos, wall);
                 if (normal.mag() === 0) {
                     normal.set(random(-1, 1), random(-1, 1));
                 }
@@ -431,7 +432,7 @@ class jerry {
         this.fitness++;
         // this.fitness -= this.health/8;
         this.health -= (this.hunger / 200) * tickSpeed;
-        this.health -= 0.001*tickSpeed;
+        this.health -= 0.005*tickSpeed;
 
         if (colours) {
             this.currentColor = color(this.color.r, this.color.g, this.color.b, map(this.health, 0, this.maxHealth, 0, 255));
