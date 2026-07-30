@@ -21,7 +21,8 @@ let mousePos;
 let analyzing;
 let openStats = false;
 let tickSpeed = 1;
-let slider;
+let tSlider;
+let wSlider;
 
 
 
@@ -36,18 +37,27 @@ function setup() {
         food.push(createVector(random(0, width), random(0, height)));
     }
     rectMode(CENTER);
-    slider = createSlider(0.1, 50)
-    slider.value(1);
-    slider.position(10, 10);
-    slider.size(80);
+    tSlider = createSlider(0.1, 50)
+    tSlider.value(1);
+    tSlider.position(10, 10);
+    tSlider.size(80);
+
+    
+    wSlider = createSlider(0, 1000)
+    wSlider.value(1000);
+    wSlider.position((window.innerWidth/2)-500, 10);
+    wSlider.size(1000);
 }
 
 
 
 
 function draw() {
-
-    tickSpeed = slider.value();
+    
+    canvas = createCanvas(wSlider.value(), 500);
+    canvas.position(-(window.innerWidth/2) + 1000, (window.innerHeight/2) - (height/2));
+    
+    tickSpeed = tSlider.value();
 
     mousePos = createVector(mouseX, mouseY);
 
@@ -75,6 +85,11 @@ function draw() {
     
 
     for(let i = 0; i < food.length; i++){
+        if(food[i].x > width || food[i].y > height || food[i].x < 0 || food[i].y < 0){
+            food = food.filter(nugget => nugget != food[i]);
+            i--;
+            break;
+        }
         noStroke();
         fill(150, 210, 150);
         ellipse(food[i].x, food[i].y, 5, 5);
@@ -251,12 +266,14 @@ function draw() {
 
 
 function mouseDown() {
-    if(mouseButton.left && keyIsDown(SHIFT)){
-        if (walls.length == 0) walls.push(mousePos);
-        if(!walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
-            walls.push(mousePos);
+    if(mouseButton.left){
+        if(keyIsDown(SHIFT)){
+            if (walls.length == 0) walls.push(mousePos);
+            if(!walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
+                walls.push(mousePos);
+            }
         }
-    }else{
+    }else if(mouseButton.right){
         if (keyIsDown(SHIFT)) {
             walls = [];
         }else if(walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){

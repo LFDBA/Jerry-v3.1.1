@@ -431,6 +431,7 @@ class jerry {
         this.fitness++;
         // this.fitness -= this.health/8;
         this.health -= (this.hunger / 200) * tickSpeed;
+        this.health -= 0.001*tickSpeed;
 
         if (colours) {
             this.currentColor = color(this.color.r, this.color.g, this.color.b, map(this.health, 0, this.maxHealth, 0, 255));
