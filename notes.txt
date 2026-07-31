@@ -1,1 +1,3 @@
 if a jerry eats a jerry thats a friend of a jerry the friendship of those jerries will be disbanded (friendship being this.safe)
+
+improve mutation

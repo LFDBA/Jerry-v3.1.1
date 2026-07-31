@@ -23,8 +23,8 @@ let openStats = false;
 let tickSpeed = 1;
 let tSlider;
 let wSlider;
-let canvWidth = window.innerWidth-200;
-let canvHeight = window.innerHeight-200;
+let canvWidth = window.innerWidth-1000;
+let canvHeight = window.innerHeight-600;
 
 
 
@@ -110,7 +110,12 @@ function draw() {
 
     for(wall of walls){
         fill(255);
+        noStroke();
         rect(wall.x, wall.y, wallSize);
+
+        if(wall.x >= width || wall.y >= height) walls = walls.filter(num => num != wall);
+        
+
     }
 
     for(let i = 0; i < jerrys.length; i++) {
@@ -180,10 +185,13 @@ function draw() {
 
     if(gripping != 0 && dist(gripping.pos.x, gripping.pos.y, mouseX, mouseY)) {
         d = dist(gripping.pos.x, gripping.pos.y, mouseX, mouseY);
+        rs = gripping.speed;
         if(d >= gripping.size/2){
+            gripping.speed = 4*(dist(gripping.pos.x, gripping.pos.y, mouseX, mouseY)/(width/15));
             gripping.move(createVector(mouseX-gripping.pos.x, mouseY-gripping.pos.y));
+            gripping.speed = rs;
         }else{
-            gripping.vel.mult(0.5);
+            gripping.vel.mult(0.6);
         }
     }
     textAlign(LEFT, CENTER);
@@ -253,6 +261,12 @@ function mouseDown() {
             walls = [];
         }else if(walls.some(num => num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2)){
             walls = walls.filter(num => !(num.x >= mouseX-wallSize/2 && num.x <= mouseX+wallSize/2 && num.y >= mouseY-wallSize/2 && num.y <= mouseY+wallSize/2));
+        }
+        for(creature of jerrys){
+            if(dist(mouseX, mouseY, creature.pos.x, creature.pos.y) <= creature.size/2){
+                jerrys = jerrys.filter(j => j != creature);
+                maxPopulation--;
+            }
         }
     }
 }

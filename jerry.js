@@ -163,7 +163,7 @@ class jerry {
         other.acc = createVector(this.pos.x - other.pos.x, this.pos.y - other.pos.y);
 
         let child;
-        if (random(0, 1) >= 1 - mutationRate) {
+        if (random(0, 1) >= mutationRate) {
             child = new jerry(
                 (this.pos.x + other.pos.x) / 2,
                 (this.pos.y + other.pos.y) / 2,
@@ -259,8 +259,8 @@ class jerry {
         let pushedFood = createVector(this.pos.x, this.pos.y);
         food.push(pushedFood);
 
-        this.hunger -= foodBoost/10;
-        this.health += foodBoost/2;
+        this.hunger -= foodBoost/100;
+        this.health += foodBoost/100;
 
         this.latestAction[0] = Actions.PLANT;
         this.latestAction[1] = this;
@@ -427,6 +427,13 @@ class jerry {
         
 
         other.acc = createVector((this.pos.x - other.pos.x) * (this.grip), (this.pos.y - other.pos.y) * (this.grip));
+
+
+        // -------------------- FRIENDS -------------------- //
+        // let friend;
+        // for(friend of this.safe){
+        //     if(!other.safe.includes(friend)) this.safe.filter(jer => jer != friend);
+        // }
 
     }
 
