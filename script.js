@@ -23,12 +23,14 @@ let openStats = false;
 let tickSpeed = 1;
 let tSlider;
 let wSlider;
+let canvWidth = window.innerWidth-200;
+let canvHeight = window.innerHeight-200;
 
 
 
 function setup() {
-    canvas = createCanvas(1000, 500);
-    canvas.position((window.innerWidth/2) - (width/2), (window.innerHeight/2) - (height/2));
+    canvas = createCanvas(canvWidth, canvHeight);
+    canvas.position((window.innerWidth/2) - (canvWidth/2), (window.innerHeight/2) - (canvHeight/2));
     
     for (let i = 0; i < amt; i++) {
         jerrys.push(new jerry(random(0, width), random(0, height)));
@@ -43,10 +45,10 @@ function setup() {
     tSlider.size(80);
 
     
-    wSlider = createSlider(0, 1000)
-    wSlider.value(1000);
-    wSlider.position((window.innerWidth/2)-500, 10);
-    wSlider.size(1000);
+    wSlider = createSlider(0, canvWidth)
+    wSlider.value(canvWidth);
+    wSlider.position((window.innerWidth/2)-canvWidth/2, 10);
+    wSlider.size(canvWidth);
 }
 
 
@@ -54,8 +56,8 @@ function setup() {
 
 function draw() {
     
-    canvas = createCanvas(wSlider.value(), 500);
-    canvas.position((window.innerWidth/2)-500, (window.innerHeight/2) - (height/2));
+    canvas = createCanvas(wSlider.value(), canvHeight);
+    canvas.position((window.innerWidth/2)-canvWidth/2, (window.innerHeight/2) - (canvHeight/2));
     
     tickSpeed = tSlider.value();
 
@@ -155,34 +157,6 @@ function draw() {
                     }
                     
                 }
-                
-
-                // for(wall of walls){
-                //     if(!isIn(jerrys[i].pos, jerrys[j].pos, wall) && !walls.some(num => num.x >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x-wallSize && num.x <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).x+wallSize && num.y >= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y-wallSize && num.y <= getLine(jerrys[i].pos, jerrys[j].pos, num.x).y+wallSize)){
-                
-                //         let d = dist(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
-                //         let threshold = ((width + height) / 30)*distanceScale;
-                //         if(d < threshold) {
-
-                    
-                //             stroke(jerrys[i].setActionAlpha(map(d, 0, threshold, 255, 0)));
-                //             line(jerrys[i].pos.x, jerrys[i].pos.y, jerrys[j].pos.x, jerrys[j].pos.y);
-                //             jerrys[i].observe(jerrys[j]);
-                //             jerrys[j].observe(jerrys[i]);
-                //         }
-                //         if(d < threshold/2) {
-                //             jerrys[i].evaluate(jerrys[j]);
-                //             jerrys[j].evaluate(jerrys[i]);
-                //         }
-                //         else{
-                //             jerrys[i].safe = jerrys[i].safe.filter(jerry => jerry != jerrys[j]);
-                //             jerrys[j].safe = jerrys[j].safe.filter(jerry => jerry != jerrys[i]);
-                //         }
-
-                //         console.log("idka")
-                //     }
-                    
-                // }
             }
         } 
 
@@ -273,6 +247,7 @@ function mouseDown() {
                 walls.push(mousePos);
             }
         }
+        if(keyIsDown('f')) {food.push(createVector(mouseX, mouseY)); console.log("poopoofart")}
     }else if(mouseButton.right){
         if (keyIsDown(SHIFT)) {
             walls = [];

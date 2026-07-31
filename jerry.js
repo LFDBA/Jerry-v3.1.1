@@ -185,7 +185,6 @@ class jerry {
             child = new jerry((this.pos.x + other.pos.x) / 2, (this.pos.y + other.pos.y) / 2);
         }
 
-        // this.fitness += 1000;
 
         this.brain.jer1 = child;
         child.brain = this.brain;
@@ -203,20 +202,40 @@ class jerry {
     }
 
     approach(other) {
-        this.direction = p5.Vector.sub(other.pos, this.pos);
-        if (this.direction.mag() === 0) {
-            this.direction = createVector(random(-1, 1), random(-1, 1));
+        if(other instanceof jerry){
+            this.direction = p5.Vector.sub(other.pos, this.pos);
+            if (this.direction.mag() === 0) {
+                this.direction = createVector(random(-1, 1), random(-1, 1));
+            }
+            this.steer = this.direction.copy().normalize();
+            this.actionColor = colour(140, 220, 140);
+
+            this.latestAction[0] = Actions.APPROACH;
+            this.latestAction[1] = other;
+
+            this.approaching = other;
+
+            this.brain.learn(other, Actions.APPROACH, 1, this.fitness / 1000);
+            this.lastLearnt = [other, Actions.APPROACH, 1, this.fitness / 1000];
+        }else{
+            if(!this.full){
+                this.direction = p5.Vector.sub(createVector(other.x, other.y), this.pos);
+                if (this.direction.mag() === 0) {
+                    this.direction = createVector(random(-1, 1), random(-1, 1));
+                }
+                this.steer = this.direction.copy().normalize();
+                this.actionColor = colour(140, 220, 140);
+
+                this.latestAction[0] = Actions.APPROACH;
+                this.latestAction[1] = other;
+
+                this.approaching = other;
+
+                this.brain.learn(this, Actions.APPROACH, 1, this.fitness / 1000);
+                this.lastLearnt = [this, Actions.APPROACH, 1, this.fitness / 1000];
+            }
+            
         }
-        this.steer = this.direction.copy().normalize();
-        this.actionColor = colour(140, 220, 140);
-
-        this.latestAction[0] = Actions.APPROACH;
-        this.latestAction[1] = other;
-
-        this.approaching = other;
-
-        this.brain.learn(other, Actions.APPROACH, 1, this.fitness / 1000);
-        this.lastLearnt = [other, Actions.APPROACH, 1, this.fitness / 1000];
     }
 
     flee(other) {
@@ -393,8 +412,7 @@ class jerry {
             this.actionColor = colour(255, 140, 140);
 
             this.observe(other);
-        }
-        else {
+        }else {
             this.safe.push(other);
         }
 
@@ -406,12 +424,14 @@ class jerry {
             }
         }
 
+        
 
         other.acc = createVector((this.pos.x - other.pos.x) * (this.grip), (this.pos.y - other.pos.y) * (this.grip));
 
     }
 
     update() {
+
         this.plantCooldown += this.plantFrequency * tickSpeed;
         let steering = this.steer.copy();
         this.steer.set(0, 0);
@@ -430,7 +450,6 @@ class jerry {
             this.full = true;
         }
         this.fitness++;
-        // this.fitness -= this.health/8;
         this.health -= (this.hunger / 200) * tickSpeed;
         this.health -= 0.005*tickSpeed;
 
@@ -450,6 +469,14 @@ class jerry {
 
         if (this.health <= 0) {
             this.die();
+        }
+
+        let nugget;
+        for(nugget of food){
+            let nug = new nugClass(nugget.x, nugget.y);
+            if(dist(nugget.x, nugget.y, this.pos.x, this.pos.y) < ((canvWidth + canvHeight) / 30)*distanceScale && this.brain.evaluate(nug, Actions.APPROACH) >= 0.5){
+                this.approach(nug);
+            }
         }
 
     }

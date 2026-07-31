@@ -42,3 +42,24 @@ function isIn(p1, p2, item) {
     return item.x >= minX && item.x <= maxX &&
            item.y >= minY && item.y <= maxY;
 }
+
+
+class nugClass{
+    constructor(x, y){
+        this.speed = 0; 
+        this.maxHealth = 0; 
+        this.aggression = 0; 
+        this.strength = 0; 
+        this.grip = 0; 
+        this.libido = 0; 
+        this.fear = 0;
+        this.sociability = 0; 
+        this.maxKids = 0; 
+        this.fertility = 0; 
+        this.infamy = 0; 
+        this.plantFrequency = 0; 
+        this.devotion = 0;
+        this.x = x;
+        this.y = y;
+    }
+}
