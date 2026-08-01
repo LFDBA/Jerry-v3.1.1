@@ -4,7 +4,7 @@ let jerrys = [];
 let speedMultiplier = 15;
 let distanceScale = 1.5;
 let libidoScale = 6;
-let foodAmt = 200;
+let foodAmt = 0;
 let food = []
 let fertilityScale = 1;
 let foodBoost = 1;
@@ -25,6 +25,12 @@ let tSlider;
 let wSlider;
 let canvWidth = window.innerWidth-1000;
 let canvHeight = window.innerHeight-600;
+let pheremones = [];
+let pheremoneAging = 300;
+let hivemind = false;
+let trees = [];
+let treeAmt = 10;
+let treeTimeout = 0;
 
 
 
@@ -32,6 +38,9 @@ function setup() {
     canvas = createCanvas(canvWidth, canvHeight);
     canvas.position((window.innerWidth/2) - (canvWidth/2), (window.innerHeight/2) - (canvHeight/2));
     
+    for (let i = 0; i < treeAmt; i++){
+        trees.push(createVector(random(0, width), random(0, height)));
+    }
     for (let i = 0; i < amt; i++) {
         jerrys.push(new jerry(random(0, width), random(0, height)));
     }
@@ -49,16 +58,19 @@ function setup() {
     wSlider.value(canvWidth);
     wSlider.position((window.innerWidth/2)-canvWidth/2, 10);
     wSlider.size(canvWidth);
+    strokeMode(SIMPLE);
+    
 }
 
 
 
 
 function draw() {
-    
+    // console.log(JSON.stringify(jerrys[0].brain.net));
     canvas = createCanvas(wSlider.value(), canvHeight);
     canvas.position((window.innerWidth/2)-canvWidth/2, (window.innerHeight/2) - (canvHeight/2));
-    
+
+
     tickSpeed = tSlider.value();
 
     mousePos = createVector(mouseX, mouseY);
@@ -66,7 +78,15 @@ function draw() {
     if(mouseIsPressed) mouseDown();
 
     canvas.background(50, 50, 70);
-
+    for(p of pheremones){
+        p.age += tickSpeed;
+        if(p.age > pheremoneAging){
+            pheremones = pheremones.filter(num => num != p);
+        }
+        noStroke();
+        fill(255, 140, 140, 255/(map(p.age, 0, pheremoneAging*10, 0, 255)));
+        // ellipse(p.pos.x, p.pos.y, 5);
+    }
 
     if(jerrys.length <= 3 && jerrys.length > 0){
         for (let i = 0; i < amt; i++) {
@@ -83,7 +103,6 @@ function draw() {
 
         tick = 0;
     }
-    
     
 
     for(let i = 0; i < food.length; i++){
@@ -237,6 +256,26 @@ function draw() {
             }
         }
     }
+
+
+    for(let tree of trees){
+        
+        for(let i = 0; i < 10; i++){
+            pointsOnCircle(tree, 16, 10).forEach(point => {
+                fill(150, 210, 150);
+                ellipse(point.x, point.y, 10);
+            });
+        }
+        fill(255, 190, 140);
+        ellipse(tree.x, tree.y, 30);
+        
+
+        if(tick - treeTimeout > random(50, 150)){
+            treeTimeout = tick;
+            food.push(createVector(tree.x+random(-30, 30), tree.y+random(-30, 30)));
+        }
+    }
+
     strokeWeight(1);
     if(jerrys.length > 0){
         tick+=tickSpeed;

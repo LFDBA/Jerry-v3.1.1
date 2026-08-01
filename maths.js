@@ -44,6 +44,28 @@ function isIn(p1, p2, item) {
 }
 
 
+function pointsOnCircle(center, radius, divides, increment = 0) {
+    const points = [];
+    const angles = [];
+    for (let i = 0; i < divides; i++) {
+        angles.push(i * (TWO_PI/divides) + increment);
+    }
+
+    for(let angle of angles){
+        points.push(createVector(center.x + radius * Math.cos(angle), center.y + radius * Math.sin(angle)));
+    }
+    return points;
+}
+
+function addArray(array, add){
+    for(let item of array){
+        item += add;
+    }
+
+    return array;
+}
+
+
 class nugClass{
     constructor(x, y){
         this.speed = 0; 
@@ -61,5 +83,13 @@ class nugClass{
         this.devotion = 0;
         this.x = x;
         this.y = y;
+    }
+}
+
+class pheremone{
+    constructor(jer){
+        this.age = 0;
+        this.pos = createVector(jer.pos.x, jer.pos.y);
+        this.jerry = jer;
     }
 }

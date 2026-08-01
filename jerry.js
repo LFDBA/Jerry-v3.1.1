@@ -24,7 +24,7 @@ class jerry {
         fertility = random(15 * fertilityScale, 30 * fertilityScale),
         infamy = 0,
         brain = new Brain(this),
-        plantFrequency = random(0.008, 0.03),
+        plantFrequency = random(0.008, 0.025),
         devotion = random(1, 200),
         colourGene = undefined
     ) {
@@ -46,6 +46,9 @@ class jerry {
         this.libido = libido;
         this.devotion = devotion;
 
+        this.apendageAmt = 10;
+        this.apendages = [];
+
 
         this.safe = [];
 
@@ -65,14 +68,21 @@ class jerry {
         this.infamy = infamy;
         this.actionColor = colour(0, 0, 0);
         this.latestAction = [0, this];
-        this.brain = brain;
+
+        if(!hivemind) this.brain = brain;
+        else this.brain = new Brain(this, localStorage.getItem("brain") ? JSON.parse(localStorage.getItem("brain")) : brain);
+        
         this.steer = createVector(0, 0);
         this.plantFrequency = plantFrequency;
         this.plantCooldown = 0;
         this.approaching = 0;
         this.fleeing = 0;
 
+        this.pheremoneTimer = 0;
+
         this.lastLearnt = [];
+
+        
 
 
         if (colourGene == 100) this.color = colourGene;
@@ -121,6 +131,9 @@ class jerry {
             this.plantCooldown
         ];
 
+
+        this.observingColor = this.color;
+        
         // actions //
         this.approach = this.approach.bind(this);
         this.flee = this.flee.bind(this);
@@ -293,10 +306,10 @@ class jerry {
     move(target = createVector(random(-1, 1) * ((this.speed * tickSpeed) / 10), random(-1, 1) * ((this.speed * tickSpeed) / 10))) {
 
         for (wall of walls){
-            let d = dist(this.pos.x-this.size/2, this.pos.y-this.size/2, wall.x, wall.y)
+            let d = dist(this.pos.x-this.size/2, this.pos.y-this.size/2, wall.x, wall.y) - tickSpeed - this.speed*2;
             let s = createVector((this.pos.x)-(wall.x+wallSize/2), (this.pos.y)-(wall.y+wallSize/2));
             if(d <= (wallSize/2)+(this.size/2)) {
-                this.acc.mult(0);
+                this.acc = createVector(0, 0);
                 this.vel.add(s);
             }
         }
@@ -313,7 +326,7 @@ class jerry {
         }
 
         if (this.pos.x > width + 1 || this.pos.x < -1) {
-            this.pos.x = width / 2;
+            this.pos.x = (width / 2);
         }
         if (this.pos.y > height + 1 || this.pos.y < -1) {
             this.pos.y = height / 2;
@@ -364,6 +377,9 @@ class jerry {
         //     this.fleeing = 0;    
         // }
 
+
+        this.observingColor = other.currentColor;
+
         // ------------------------- NOT JERRY SPECIFIC ------------------------- //
         if (this.brain.evaluate(other, Actions.APPROACH) > 0.5 + (this.fear - this.sociability) * 0.1 && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == other)) {
             this.act(this.approach, other);
@@ -379,6 +395,25 @@ class jerry {
 
         if (other.lastLearnt.length == 4) {
             this.brain.learn(other.lastLearnt[0], other.lastLearnt[1], other.lastLearnt[2], other.lastLearnt[3]);
+        }
+
+        let p;
+        for(p of pheremones){
+            if(dist(this.pos.x, this.pos.y, p.pos.x, p.pos.y) < ((width + height) / 30)*distanceScale && p.jerry != this){
+                if(this.brain.evaluate(p.jerry, Actions.APPROACH) > 0.8/(p.age/pheremoneAging) && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == p.jerry)) {
+                    this.act(this.approach, p.jerry);
+                }
+                // if(this.brain.evaluate(p.jerry, Actions.FLEE) > 0.8/(p.age/pheremoneAging) && this.latestAction[0] != Actions.APPROACH && (this.fleeing == 0 || this.fleeing == p.jerry)) {
+                //     this.act(this.flee, p.jerry);
+                // }
+            }   
+        }
+
+        for(let tree of trees){
+            if(dist(this.pos.x, this.pos.y, tree.x, tree.y) < ((width + height) / 30)*distanceScale && this.brain.evaluate(tree, Actions.APPROACH) > 0.2 && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == tree)) {
+                this.act(this.approach, tree);
+                line(this.pos.x, this.pos.y, tree.x, tree.y);
+            }
         }
     }
 
@@ -428,6 +463,13 @@ class jerry {
 
     update() {
 
+        this.apendageAmt = this.health * 10;
+
+        if(tick >= this.pheremoneTimer + 100/this.speed){
+            pheremones.push(new pheremone(this));
+            this.pheremoneTimer = tick;
+        }
+
         this.plantCooldown += this.plantFrequency * tickSpeed;
         let steering = this.steer.copy();
         this.steer.set(0, 0);
@@ -474,6 +516,14 @@ class jerry {
                 this.approach(nug);
             }
         }
+
+        
+        // this.appendages = pointsOnCircle(createVector(this.pos.x, this.pos.y), this.size/2, this.apendageAmt, tick/30);
+        // for(let appendage of this.appendages){
+        //     noStroke();
+        //     fill(this.observingColor);
+        //     ellipse(appendage.x, appendage.y, this.size/2);
+        // }
 
     }
 }

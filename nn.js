@@ -1,6 +1,6 @@
 class Brain {
-    constructor(jer1) {
-        this.net = new NeuralNet(28);
+    constructor(jer1, net = new NeuralNet(28)) {
+        this.net = net;
         this.jer1 = jer1
     }
 
