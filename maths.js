@@ -86,7 +86,7 @@ class nugClass{
     }
 }
 
-class pheremone{
+class pheromone{
     constructor(jer){
         this.age = 0;
         this.pos = createVector(jer.pos.x, jer.pos.y);

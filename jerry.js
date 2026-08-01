@@ -78,7 +78,7 @@ class jerry {
         this.approaching = 0;
         this.fleeing = 0;
 
-        this.pheremoneTimer = 0;
+        this.pheromoneTimer = 0;
 
         this.lastLearnt = [];
 
@@ -231,22 +231,22 @@ class jerry {
             this.brain.learn(other, Actions.APPROACH, 1, this.fitness / 1000);
             this.lastLearnt = [other, Actions.APPROACH, 1, this.fitness / 1000];
         }else{
-            if(!this.full){
-                this.direction = p5.Vector.sub(createVector(other.x, other.y), this.pos);
-                if (this.direction.mag() === 0) {
-                    this.direction = createVector(random(-1, 1), random(-1, 1));
-                }
-                this.steer = this.direction.copy().normalize();
-                this.actionColor = colour(140, 220, 140);
-
-                this.latestAction[0] = Actions.APPROACH;
-                this.latestAction[1] = other;
-
-                this.approaching = other;
-
-                this.brain.learn(this, Actions.APPROACH, 1, this.fitness / 1000);
-                this.lastLearnt = [this, Actions.APPROACH, 1, this.fitness / 1000];
+            
+            this.direction = p5.Vector.sub(createVector(other.x, other.y), this.pos);
+            if (this.direction.mag() === 0) {
+                this.direction = createVector(random(-1, 1), random(-1, 1));
             }
+            this.steer = this.direction.copy().normalize();
+            this.actionColor = colour(140, 220, 140);
+
+            this.latestAction[0] = Actions.APPROACH;
+            this.latestAction[1] = other;
+
+            this.approaching = other;
+
+            this.brain.learn(this, Actions.APPROACH, 1, this.fitness / 1000);
+            this.lastLearnt = [this, Actions.APPROACH, 1, this.fitness / 1000];
+            
             
         }
     }
@@ -398,19 +398,19 @@ class jerry {
         }
 
         let p;
-        for(p of pheremones){
+        for(p of pheromones){
             if(dist(this.pos.x, this.pos.y, p.pos.x, p.pos.y) < ((width + height) / 30)*distanceScale && p.jerry != this){
-                if(this.brain.evaluate(p.jerry, Actions.APPROACH) > 0.8/(p.age/pheremoneAging) && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == p.jerry)) {
-                    this.act(this.approach, p.jerry);
+                if(this.brain.evaluate(p.jerry, Actions.APPROACH) > 0.8/(p.age/pheromoneAging) && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == p.pos)) {
+                    this.act(this.approach, p.pos);
                 }
-                // if(this.brain.evaluate(p.jerry, Actions.FLEE) > 0.8/(p.age/pheremoneAging) && this.latestAction[0] != Actions.APPROACH && (this.fleeing == 0 || this.fleeing == p.jerry)) {
+                // if(this.brain.evaluate(p.jerry, Actions.FLEE) > 0.8/(p.age/pheromoneAging) && this.latestAction[0] != Actions.APPROACH && (this.fleeing == 0 || this.fleeing == p.jerry)) {
                 //     this.act(this.flee, p.jerry);
                 // }
             }   
         }
 
         for(let tree of trees){
-            if(dist(this.pos.x, this.pos.y, tree.x, tree.y) < ((width + height) / 30)*distanceScale && this.brain.evaluate(tree, Actions.APPROACH) > 0.2 && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == tree)) {
+            if(dist(this.pos.x, this.pos.y, tree.x, tree.y) < ((width + height) / 30)*distanceScale && this.brain.evaluate(this, Actions.APPROACH) > 0.2 && this.latestAction[0] != Actions.FLEE && (this.approaching == 0 || this.approaching == tree)) {
                 this.act(this.approach, tree);
                 line(this.pos.x, this.pos.y, tree.x, tree.y);
             }
@@ -464,12 +464,6 @@ class jerry {
     update() {
 
         this.apendageAmt = this.health * 10;
-
-        if(tick >= this.pheremoneTimer + 100/this.speed){
-            pheremones.push(new pheremone(this));
-            this.pheremoneTimer = tick;
-        }
-
         this.plantCooldown += this.plantFrequency * tickSpeed;
         let steering = this.steer.copy();
         this.steer.set(0, 0);
@@ -516,6 +510,12 @@ class jerry {
                 this.approach(nug);
             }
         }
+
+        if(tick >= this.pheromoneTimer + 100/this.speed){
+            pheromones.push(new pheromone(this));
+            this.pheromoneTimer = tick;
+        }
+
 
         
         // this.appendages = pointsOnCircle(createVector(this.pos.x, this.pos.y), this.size/2, this.apendageAmt, tick/30);

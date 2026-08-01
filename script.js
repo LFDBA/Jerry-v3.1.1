@@ -25,8 +25,8 @@ let tSlider;
 let wSlider;
 let canvWidth = window.innerWidth-1000;
 let canvHeight = window.innerHeight-600;
-let pheremones = [];
-let pheremoneAging = 300;
+let pheromones = [];
+let pheromoneAging = 300;
 let hivemind = false;
 let trees = [];
 let treeAmt = 10;
@@ -78,30 +78,44 @@ function draw() {
     if(mouseIsPressed) mouseDown();
 
     canvas.background(50, 50, 70);
-    for(p of pheremones){
+    for(let p of pheromones){
         p.age += tickSpeed;
-        if(p.age > pheremoneAging){
-            pheremones = pheremones.filter(num => num != p);
+        if(p.age > pheromoneAging){
+            pheromones = pheromones.filter(num => num != p);
         }
         noStroke();
-        fill(255, 140, 140, 255/(map(p.age, 0, pheremoneAging*10, 0, 255)));
+        fill(255, 140, 140, 255/(map(p.age, 0, pheromoneAging*10, 0, 255)));
         // ellipse(p.pos.x, p.pos.y, 5);
     }
 
-    if(jerrys.length <= 3 && jerrys.length > 0){
-        for (let i = 0; i < amt; i++) {
-            random(jerrys).babyMake(random(jerrys)).pos = createVector(random(0, width), random(0, height));
-            
-        }
-        food = [];
-        for (let i = 0; i < foodAmt; i++){
-            
-            food.push(createVector(random(0, width), random(0, height)));
-        }
+    if(jerrys.length <= 3){
+        if(jerrys.length == 0){
+            for (let i = 0; i < amt; i++) {
+                jerrys.push(new jerry(random(0, width), random(0, height)));
+            }
+            food = [];
+            for (let i = 0; i < foodAmt; i++){
+                food.push(createVector(random(0, width), random(0, height)));
+            }
+            extinctions++;
+            tick = 0;
+            treeTimeout = 0;
+        }else{
+            for (let i = 0; i < amt; i++) {
+                random(jerrys).babyMake(random(jerrys)).pos = createVector(random(0, width), random(0, height));
+                
+            }
+            food = [];
+            for (let i = 0; i < foodAmt; i++){
+                
+                food.push(createVector(random(0, width), random(0, height)));
+            }
 
-        extinctions++;
+            extinctions++;
 
-        tick = 0;
+            tick = 0;
+            treeTimeout = 0;
+        }
     }
     
 
@@ -259,7 +273,7 @@ function draw() {
 
 
     for(let tree of trees){
-        
+        noStroke();
         for(let i = 0; i < 10; i++){
             pointsOnCircle(tree, 16, 10).forEach(point => {
                 fill(150, 210, 150);
@@ -272,6 +286,7 @@ function draw() {
 
         if(tick - treeTimeout > random(50, 150)){
             treeTimeout = tick;
+            console.log("tree spawned food");
             food.push(createVector(tree.x+random(-30, 30), tree.y+random(-30, 30)));
         }
     }
