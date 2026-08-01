@@ -293,22 +293,11 @@ class jerry {
     move(target = createVector(random(-1, 1) * ((this.speed * tickSpeed) / 10), random(-1, 1) * ((this.speed * tickSpeed) / 10))) {
 
         for (wall of walls){
-            const minDist = this.size / 2 + wallSize/2 + tickSpeed/2 + 0.25;
-            const currentDist = dist(this.pos.x-wallSize/2, this.pos.y-wallSize/2, wall.x, wall.y);
-            const overlap = minDist - currentDist;
-
-            if (overlap >= 0) {
-                const normal = p5.Vector.sub(this.pos, wall);
-                if (normal.mag() === 0) {
-                    normal.set(random(-1, 1), random(-1, 1));
-                }
-                normal.normalize();
-
-                this.pos.add(normal.copy().mult(overlap * 0.6));
-                const relVel = this.vel.dot(normal);
-                if (relVel < 0) {
-                    this.vel.sub(normal.mult(relVel * 1.2));
-                }
+            let d = dist(this.pos.x-this.size/2, this.pos.y-this.size/2, wall.x, wall.y)
+            let s = createVector((this.pos.x)-(wall.x+wallSize/2), (this.pos.y)-(wall.y+wallSize/2));
+            if(d <= (wallSize/2)+(this.size/2)) {
+                this.acc.mult(0);
+                this.vel.add(s);
             }
         }
 
