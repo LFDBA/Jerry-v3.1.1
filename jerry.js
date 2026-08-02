@@ -24,7 +24,7 @@ class jerry {
         fertility = random(15 * fertilityScale, 30 * fertilityScale),
         infamy = 0,
         brain = new Brain(this),
-        plantFrequency = random(0.008, 0.025),
+        plantFrequency = random(0.008, 0.03),
         devotion = random(1, 200),
         colourGene = undefined
     ) {
@@ -46,7 +46,7 @@ class jerry {
         this.libido = libido;
         this.devotion = devotion;
 
-        this.apendageAmt = 10;
+        this.apendageAmt = 0;
         this.apendages = [];
 
 
@@ -203,6 +203,7 @@ class jerry {
         child.brain = this.brain;
         jerrys.push(child);
         this.children.push(child);
+        this.safe.push(child);
         this.latestAction[0] = Actions.BREED;
         this.latestAction[1] = other;
 
@@ -318,6 +319,9 @@ class jerry {
         this.vel.add(this.acc);
         this.vel.limit(this.speed * tickSpeed);
         this.pos.add(this.vel);
+        
+        
+
         if ((this.pos.x > width - this.size / 2 - tickSpeed/2 && this.vel.x >= 0) || (this.pos.x < 0 + this.size / 2 + tickSpeed/2 && this.vel.x <= 0)) {
             this.vel.x *= -1;
         }
@@ -325,11 +329,9 @@ class jerry {
             this.vel.y *= -1;
         }
 
-        if (this.pos.x > width + 1 || this.pos.x < -1) {
-            this.pos.x = (width / 2);
-        }
-        if (this.pos.y > height + 1 || this.pos.y < -1) {
-            this.pos.y = height / 2;
+        if (this.pos.x > width + 1 || this.pos.x < -1 || this.pos.y > height+1 || this.pos.y < -1) {
+            this.pos.x = (this.pos.x + this.vel.x + width) %width;
+            this.pos.y = (this.pos.y + this.vel.y + height) %height;
         }
 
 
@@ -427,7 +429,7 @@ class jerry {
             return;
         }
 
-        if (random(0, 1) < this.aggression && !this.safe.includes(other) && this.brain.evaluate(other, Actions.EAT) >= this.sociability) {
+        if (random(0, 1) < this.aggression && !this.safe.includes(other) && this.brain.evaluate(other, Actions.EAT) >= this.sociability*2 && !this.safe.includes(other)) {
             other.health -= 20 / 255
             if (other.health <= 0) {
                 this.act(this.eat, other);

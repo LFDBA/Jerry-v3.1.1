@@ -1,4 +1,4 @@
-let molds = []; let num = 4000;
+let molds = []; let num = 10000;
 let d; 
 
 function setup() {
