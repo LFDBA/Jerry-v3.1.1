@@ -3,3 +3,7 @@ if a jerry eats a jerry thats a friend of a jerry the friendship of those jerrie
 improve mutation
 
 pheramones
+
+
+
+for gravity, each body is an object running the particle's move functions

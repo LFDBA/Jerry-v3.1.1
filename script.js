@@ -23,13 +23,13 @@ let openStats = false;
 let tickSpeed = 1;
 let tSlider;
 let wSlider;
-let canvWidth = window.innerWidth-1000;
-let canvHeight = window.innerHeight-600;
+let canvWidth = window.innerWidth*0.9;
+let canvHeight = window.innerHeight*0.9;
 let pheromones = [];
 let pheromoneAging = 300;
 let hivemind = false;
 let trees = [];
-let treeAmt = 10;
+let treeAmt = 0;
 let treeTimeout = 0;
 
 
@@ -355,3 +355,10 @@ function keyPressed(){
     }
     
 }
+
+window.addEventListener('resize', () => {
+    canvWidth = window.innerWidth*0.9;
+    canvHeight = window.innerHeight*0.9;
+    canvas = createCanvas(canvWidth, canvHeight);
+    canvas.position((window.innerWidth/2) - (canvWidth/2), (window.innerHeight/2) - (canvHeight/2));
+})
